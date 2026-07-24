@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="SIH 2026 Internal College Innovation Challenge Portal - Aryan Institute of Engineering & Technology">
+    <title>SIH 2026 | Aryan Institute Innovation Challenge</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+  </head>
+  <body>
+    <div id="page-loader" aria-label="Loading portal"><span class="loader-mark">SIH</span></div>
+    <div class="topline"><span></span><span></span><span></span></div>
+
+    <nav class="navbar navbar-expand-lg fixed-top nav-glass" aria-label="Main navigation">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#home">
+          <span class="brand-shield">A</span><span>ARYAN <small>SIH 2026</small></span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-nav" aria-controls="main-nav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+        <div id="main-nav" class="collapse navbar-collapse">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+            <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="#problem-statements">Problem Statements</a></li>
+            <li class="nav-item"><a class="nav-link" href="#rules">Rules</a></li>
+            <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+            <li class="nav-item ms-lg-2"><button class="btn btn-link nav-login" data-bs-toggle="modal" data-bs-target="#loginModal">Log in</button></li>
+            <li class="nav-item"><button class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#registerModal">Register now</button></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <section id="home" class="hero-section">
+        <div class="hero-orb orb-blue"></div><div class="hero-orb orb-green"></div><div class="grid-pattern"></div>
+        <div class="container position-relative">
+          <div class="government-logo-wrap" data-aos="fade-down">
+            <img src="assets/sih-government-logos.png" alt="Ministry of Education, AICTE, Innovation Cell and Smart India Hackathon 2026">
+          </div>
+          <div class="row align-items-center g-5 pt-4">
+            <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+              <div class="eyebrow"><span class="pulse-dot"></span> Internal College Innovation Challenge</div>
+              <h1>Turn your <span class="text-gradient">boldest idea</span> into India's next innovation.</h1>
+              <p class="hero-copy">Aryan Institute of Engineering &amp; Technology invites student teams to choose a real problem, build a meaningful solution and earn nomination to Smart India Hackathon 2026.</p>
+              <div class="d-flex flex-wrap gap-3 mt-4">
+                <button class="btn btn-primary btn-lg px-4" data-bs-toggle="modal" data-bs-target="#registerModal">Start your registration <span aria-hidden="true">→</span></button>
+                <a class="btn btn-outline-primary btn-lg px-4" href="#problem-statements">Explore problems</a>
+              </div>
+              <div class="hero-proof mt-5">
+                <div><strong>5</strong><span>Members in<br>every team</span></div>
+                <div><strong>22</strong><span>Curated problem<br>statements</span></div>
+                <div><strong>100</strong><span>Points in the<br>evaluation rubric</span></div>
+              </div>
+            </div>
+            <div class="col-lg-5" data-aos="zoom-in" data-aos-delay="180">
+              <div class="institution-card">
+                <div class="instit-card-glow"></div>
+                <img id="sih-logo-trigger" src="assets/aryan-institute.png" alt="Aryan Institute of Engineering & Technology logo" title="Click me 30 times">
+                <div class="status-pill"><span class="status-live"></span><span id="current-status">Registration opens shortly</span></div>
+                <p>Presented by Aryan Institute of Engineering &amp; Technology</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="countdown-strip" aria-label="Registration countdown">
+        <div class="container"><div class="row align-items-center gy-3">
+          <div class="col-lg-4"><p class="section-kicker mb-1">Current status</p><h2 id="countdown-title">Registration opens in</h2><p class="mb-0 text-white-50" id="countdown-caption">The timetable is published by the SIH cell.</p></div>
+          <div class="col-lg-8"><div id="countdown" class="countdown-boxes" aria-live="polite">
+            <div><b id="days">00</b><span>Days</span></div><div><b id="hours">00</b><span>Hours</span></div><div><b id="minutes">00</b><span>Minutes</span></div><div><b id="seconds">00</b><span>Seconds</span></div>
+          </div></div>
+        </div></div>
+      </section>
+
+      <section id="about" class="section-space">
+        <div class="container"><div class="row align-items-center g-5">
+          <div class="col-lg-5" data-aos="fade-right"><p class="section-kicker">A route from idea to nomination</p><h2 class="section-title">Built around the real <span>SIH selection flow.</span></h2><p class="lead text-secondary">This portal mirrors the institute booklet: select a suitable challenge, form a balanced team, build a demonstrable solution, present to the committee and qualify for nomination.</p><a href="assets/internal-selection.pdf" target="_blank" rel="noopener" class="text-link">Read the internal selection booklet <span>↗</span></a></div>
+          <div class="col-lg-7"><div class="journey-grid" data-aos="fade-left">
+            <article><span>01</span><h3>Select</h3><p>Choose one primary software or hardware problem statement.</p></article>
+            <article><span>02</span><h3>Form</h3><p>Bring together a team with complementary strengths.</p></article>
+            <article><span>03</span><h3>Build</h3><p>Prepare an approach, architecture and workable prototype.</p></article>
+            <article><span>04</span><h3>Present</h3><p>Pitch before the Institute SIH Evaluation Committee.</p></article>
+            <article class="journey-final"><span>05</span><h3>Qualify</h3><p>Top teams are recommended for institute nomination.</p></article>
+          </div></div>
+        </div></div>
+      </section>
+
+      <section id="problem-statements" class="section-space section-muted">
+        <div class="container"><div class="section-heading-row"><div><p class="section-kicker">Find a challenge worth solving</p><h2 class="section-title">Problem <span>statements</span></h2></div><div class="track-filter" role="group" aria-label="Filter problem statements"><button class="filter-btn active" data-track="All">All</button><button class="filter-btn" data-track="Software">Software</button><button class="filter-btn" data-track="Hardware">Hardware</button></div></div>
+          <div id="problem-grid" class="problem-grid mt-4" aria-live="polite"></div>
+          <div class="text-center mt-4"><button id="show-more-problems" class="btn btn-outline-primary px-4">View all statements</button></div>
+        </div>
+      </section>
+
+      <section id="rules" class="section-space">
+        <div class="container"><div class="text-center mx-auto section-intro" data-aos="fade-up"><p class="section-kicker">Know before you register</p><h2 class="section-title">Rules that make teams <span>stronger.</span></h2></div>
+          <div class="row g-4 mt-2"><div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="0"><article class="rule-card"><span class="rule-icon">01</span><h3>One problem</h3><p>Each team selects one primary problem statement and defines a proposed solution.</p></article></div><div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="80"><article class="rule-card"><span class="rule-icon">02</span><h3>Five members</h3><p>Register exactly five students, including at least one female member and the team leader.</p></article></div><div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="160"><article class="rule-card"><span class="rule-icon">03</span><h3>Show the work</h3><p>Bring a prototype, mock-up, simulation or demonstrable implementation.</p></article></div><div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="240"><article class="rule-card"><span class="rule-icon">04</span><h3>Follow SIH</h3><p>Final team eligibility and mentor rules remain subject to official SIH guidelines.</p></article></div></div>
+          <div class="rubric-panel mt-5" data-aos="fade-up"><div><p class="section-kicker">Suggested internal evaluation rubric</p><h3>Every promising idea gets a fair, transparent review.</h3><p>Scores are computed automatically by the admin evaluation module.</p></div><div id="rubric-list" class="rubric-list"><span>Problem understanding <b>15</b></span><span>Innovation &amp; originality <b>20</b></span><span>Technical feasibility <b>20</b></span><span>Prototype readiness <b>20</b></span><span>Impact &amp; sustainability <b>15</b></span><span>Presentation &amp; teamwork <b>10</b></span></div></div>
+        </div>
+      </section>
+
+      <section id="gallery" class="section-space"><div class="container"><div class="gallery-banner" data-aos="zoom-in"><div><p class="section-kicker text-white-50">One campus. Many possibilities.</p><h2>Think wider.<br><span>Build smarter.</span></h2></div><div class="gallery-tiles"><span>AI</span><span>IoT</span><span>Health</span><span>Climate</span><span>Impact</span><span>India</span></div></div></div></section>
+
+      <section id="contact" class="section-space contact-section"><div class="container"><div class="row g-5 align-items-center"><div class="col-lg-7"><p class="section-kicker">Need help?</p><h2 class="section-title">Your next solution can start <span>today.</span></h2><p class="lead text-secondary">Speak to the Institute SIH Cell for eligibility, mentor assignment or internal-selection support.</p><div class="contact-links"><a href="https://wa.me/917008927696?text=Hello%20SIH%20Cell%2C%20I%20need%20help%20with%20SIH%202026." target="_blank" rel="noopener">WhatsApp: +91 7008927696</a><span>•</span><span>Aryan Institute of Engineering &amp; Technology</span></div></div><div class="col-lg-5"><div class="announcement-card"><div class="d-flex justify-content-between align-items-center"><h3>Latest notices</h3><span class="notice-dot"></span></div><div id="announcement-list"><p class="text-secondary mb-0">Updates from the SIH cell will appear here.</p></div></div></div></div></div></section>
+    </main>
+
+    <footer><div class="container text-center"><span>© 2026 Aryan Institute of Engineering &amp; Technology</span></div></footer>
+
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginLabel" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><form id="login-form" class="modal-content auth-modal"><div class="modal-header border-0"><div><p class="section-kicker mb-1">Team leader login</p><h2 id="loginLabel" class="h3 mb-0">Log in to your portal</h2></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body pt-2"><div id="login-message" class="form-message d-none"></div><label class="form-label" for="login-email">Team leader email</label><input id="login-email" name="email" class="form-control" type="email" autocomplete="email" required><label class="form-label mt-3" for="login-password">Password</label><input id="login-password" name="password" class="form-control" type="password" autocomplete="current-password" required><button class="btn btn-primary w-100 mt-4" type="submit">Log in <span aria-hidden="true">→</span></button><a class="d-block small text-center text-primary fw-bold mt-3" href="https://wa.me/917008927696?text=Hello%20SIH%20Cell%2C%20I%20need%20to%20reset%20my%20team%20leader%20portal%20password." target="_blank" rel="noopener">Forgot password? Request a reset on WhatsApp</a><p class="small text-center text-secondary mt-3 mb-0">Only the registered team leader can sign in. Administrator access stays protected.</p></div></form></div></div>
+
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerLabel" aria-hidden="true"><div class="modal-dialog modal-xl modal-dialog-scrollable"><form id="register-form" class="modal-content auth-modal" enctype="multipart/form-data"><div class="modal-header border-0"><div><p class="section-kicker mb-1">Team registration</p><h2 id="registerLabel" class="h3 mb-0">Register your five-member SIH team</h2></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body pt-2"><div id="register-message" class="form-message d-none"></div><p class="text-secondary small">Register exactly five students. Every team must include at least one female member. Only the team leader uploads a passport-size photograph and can log in later.</p><div class="row g-3"><div class="col-md-5"><label class="form-label">Team name *</label><input name="teamName" class="form-control" required></div><div class="col-md-4"><label class="form-label">Department *</label><input name="department" class="form-control" placeholder="e.g. Computer Science" required></div><div class="col-md-3"><label class="form-label">Faculty mentor *</label><input name="facultyMentor" class="form-control" required></div><div class="col-12"><label class="form-label">Problem statement *</label><select id="registration-ps" name="psId" class="form-select" required><option value="">Choose a problem statement</option></select></div></div><hr class="my-4"><div id="registration-members" class="registration-members"></div><div class="row g-3 mt-1"><div class="col-md-6"><label class="form-label">Team leader passport photo *</label><input name="photo" class="form-control" type="file" accept="image/png,image/jpeg,image/webp" required></div><div class="col-md-6"><label class="form-label">Team leader login password *</label><input name="leaderPassword" class="form-control" type="password" minlength="8" autocomplete="new-password" required></div></div><button class="btn btn-primary mt-4 px-4" type="submit">Submit team registration <span aria-hidden="true">→</span></button></div></form></div></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script><script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script><script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script><script src="js/config.js"></script><script src="js/app.js"></script>
+  </body>
+</html>
