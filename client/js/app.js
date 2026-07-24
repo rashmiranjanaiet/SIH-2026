@@ -49,7 +49,7 @@ function registrationMemberTemplate(index) {
   const leader = index === 0;
   const label = leader ? 'Team leader' : `Member ${index + 1}`;
   return `<section class="member-form" data-registration-member><h4>${label}${leader ? ' · login account holder' : ''}</h4><div class="row g-2">
-    <div class="col-md-4"><label class="form-label">Full name${leader ? '' : ' (optional)'}</label><input class="form-control form-control-sm" name="name"></div>
+    <div class="col-md-4"><label class="form-label">Full name *</label><input class="form-control form-control-sm" name="name" required></div>
     <div class="col-md-2"><label class="form-label">Gender${leader ? ' *' : ' (optional)'}</label><select class="form-select form-select-sm" name="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option></select></div>
     <div class="col-md-3"><label class="form-label">Email${leader ? ' *' : ' (optional)'}</label><input class="form-control form-control-sm" name="email" type="email" ${leader ? 'required' : ''}></div>
     <div class="col-md-3"><label class="form-label">Mobile (optional)</label><input class="form-control form-control-sm" name="mobile" inputmode="tel"></div>

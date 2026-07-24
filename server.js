@@ -305,6 +305,7 @@ app.get('/api/public/config', async (_req, res, next) => {
 });
 
 const teamRegistrationValidation = [
+  body('teamName').trim().isLength({ min: 1, max: 100 }),
   body('leaderPassword').isLength({ min: 8, max: 72 }),
   body('members').notEmpty()
 ];
@@ -322,19 +323,20 @@ app.post('/api/auth/register', requireDatabase, upload.single('photo'), teamRegi
       const value = member && typeof member === 'object' ? member : {};
       const suppliedEmail = String(value.email || '').trim().toLowerCase();
       return {
-        name: text(value.name, index === 0 ? 'Team Leader' : `Member ${index + 1}`),
+        name: text(value.name, ''),
         gender: allowedGenders.includes(value.gender) ? value.gender : 'Prefer not to say',
         email: suppliedEmail || `not-provided-${reference}-${index + 1}@pending.aryan.local`,
         mobile: text(value.mobile), branch: text(value.branch), academicYear: text(value.academicYear), semester: text(value.semester),
         registrationNumber: text(value.registrationNumber, `PENDING-${reference}-${index + 1}`), rollNumber: text(value.rollNumber)
       };
     });
+    if (completedMembers.some((member) => !member.name)) return res.status(422).json({ message: 'Enter the full name for all five team members.' });
     if (!completedMembers.some((member) => member.gender === 'Female')) return res.status(422).json({ message: 'Select Female for at least one of the five members.' });
     const selected = PROBLEM_STATEMENTS.find((item) => item.psId === req.body.psId) || PROBLEM_STATEMENTS[0];
     const leader = completedMembers[0];
     if (!/^\S+@\S+\.\S+$/.test(String(members[0]?.email || '').trim())) return res.status(422).json({ message: 'Enter a valid email address for the team leader so they can sign in.' });
     const existing = await User.findOne({ $or: [{ email: leader.email }, { registrationNumber: leader.registrationNumber }] });
-    const teamName = text(req.body.teamName, `SIH Team ${reference}`);
+    const teamName = text(req.body.teamName, '');
     if (existing || await Team.exists({ name: teamName })) return res.status(409).json({ message: 'That team name, leader email, or leader registration number is already registered.' });
     const photo = req.file ? await uploadToCloudinary(req.file, 'sih-2026-aryan/profile-photos', 'image') : null;
     const password = await bcrypt.hash(req.body.leaderPassword, 12);
