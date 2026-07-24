@@ -86,8 +86,7 @@ function renderTimeline(settings) {
 }
 
 function startCountdown(settings) {
-  const title = document.getElementById('countdown-title'); const status = document.getElementById('current-status'); const caption = document.getElementById('countdown-caption');
-  status.textContent = settings.currentStatus || 'Registration opens shortly';
+  const title = document.getElementById('countdown-title'); const caption = document.getElementById('countdown-caption');
   const now = Date.now(); const isOpen = settings.registrationEnabled && new Date(settings.registrationClose).getTime() > now;
   const target = isOpen ? new Date(settings.registrationClose).getTime() : new Date(settings.registrationOpen).getTime();
   title.textContent = 'Timer';
@@ -133,7 +132,6 @@ function setupEasterEgg() {
     clicks += 1; window.clearTimeout(reset); reset = window.setTimeout(() => { clicks = 0; }, 7000);
     if (clicks === 30) {
       clicks = 0; if (window.confetti) { const duration = 1800; const until = Date.now() + duration; const fire = () => { confetti({ particleCount: 8, spread: 75, origin: { y: .58 }, colors: ['#0756a4','#0a873f','#f28b00','#ffffff'] }); if (Date.now() < until) requestAnimationFrame(fire); }; fire(); }
-      const badge = document.querySelector('.status-pill'); badge.innerHTML = '<span class="status-live"></span> Innovation Never Stops 🚀'; badge.style.transform = 'scale(1.08)'; window.setTimeout(() => { badge.style.transform = ''; }, 900);
     }
   });
 }
