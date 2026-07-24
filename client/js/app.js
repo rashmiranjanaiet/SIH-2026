@@ -90,7 +90,7 @@ function startCountdown(settings) {
   status.textContent = settings.currentStatus || 'Registration opens shortly';
   const now = Date.now(); const isOpen = settings.registrationEnabled && new Date(settings.registrationClose).getTime() > now;
   const target = isOpen ? new Date(settings.registrationClose).getTime() : new Date(settings.registrationOpen).getTime();
-  title.textContent = isOpen ? 'Registration closes in' : 'Registration opens in';
+  title.textContent = 'Timer';
   caption.textContent = isOpen ? 'Submit your profile before the registration window closes.' : 'The timetable is published and controlled by the SIH cell.';
   const update = () => {
     let distance = Math.max(0, target - Date.now());
