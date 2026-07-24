@@ -49,21 +49,21 @@ function registrationMemberTemplate(index) {
   const leader = index === 0;
   const label = leader ? 'Team leader' : `Member ${index + 1}`;
   return `<section class="member-form" data-registration-member><h4>${label}${leader ? ' · login account holder' : ''}</h4><div class="row g-2">
-    <div class="col-md-4"><label class="form-label">Full name *</label><input class="form-control form-control-sm" name="name" required></div>
-    <div class="col-md-2"><label class="form-label">Gender *</label><select class="form-select form-select-sm" name="gender" required><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option></select></div>
-    <div class="col-md-3"><label class="form-label">Email *</label><input class="form-control form-control-sm" name="email" type="email" required></div>
-    <div class="col-md-3"><label class="form-label">Mobile *</label><input class="form-control form-control-sm" name="mobile" inputmode="tel" required></div>
-    <div class="col-md-3"><label class="form-label">Branch *</label><input class="form-control form-control-sm" name="branch" placeholder="e.g. CSE" required></div>
-    <div class="col-md-2"><label class="form-label">Academic year *</label><select class="form-select form-select-sm" name="academicYear" required><option value="">Select</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option></select></div>
-    <div class="col-md-2"><label class="form-label">Semester *</label><input class="form-control form-control-sm" name="semester" placeholder="e.g. 5" required></div>
-    <div class="col-md-3"><label class="form-label">Registration no. *</label><input class="form-control form-control-sm" name="registrationNumber" required></div>
-    <div class="col-md-2"><label class="form-label">Roll no. *</label><input class="form-control form-control-sm" name="rollNumber" required></div>
+    <div class="col-md-4"><label class="form-label">Full name${leader ? '' : ' (optional)'}</label><input class="form-control form-control-sm" name="name"></div>
+    <div class="col-md-2"><label class="form-label">Gender${leader ? ' *' : ' (optional)'}</label><select class="form-select form-select-sm" name="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option></select></div>
+    <div class="col-md-3"><label class="form-label">Email${leader ? ' *' : ' (optional)'}</label><input class="form-control form-control-sm" name="email" type="email" ${leader ? 'required' : ''}></div>
+    <div class="col-md-3"><label class="form-label">Mobile (optional)</label><input class="form-control form-control-sm" name="mobile" inputmode="tel"></div>
+    <div class="col-md-3"><label class="form-label">Branch (optional)</label><input class="form-control form-control-sm" name="branch" placeholder="e.g. CSE"></div>
+    <div class="col-md-2"><label class="form-label">Academic year (optional)</label><select class="form-select form-select-sm" name="academicYear"><option value="">Select</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option></select></div>
+    <div class="col-md-2"><label class="form-label">Semester (optional)</label><input class="form-control form-control-sm" name="semester" placeholder="e.g. 5"></div>
+    <div class="col-md-3"><label class="form-label">Registration no. (optional)</label><input class="form-control form-control-sm" name="registrationNumber"></div>
+    <div class="col-md-2"><label class="form-label">Roll no. (optional)</label><input class="form-control form-control-sm" name="rollNumber"></div>
   </div></section>`;
 }
 
 function renderRegistrationForm() {
   const select = document.getElementById('registration-ps');
-  select.innerHTML = '<option value="">Choose a problem statement</option>' + portalConfig.problemStatements.map((item) => `<option value="${escapeHtml(item.psId)}">${escapeHtml(item.psId)} · ${escapeHtml(item.track)} · ${escapeHtml(item.title)}</option>`).join('');
+  select.innerHTML = portalConfig.problemStatements.map((item) => `<option value="${escapeHtml(item.psId)}">${escapeHtml(item.psId)} · ${escapeHtml(item.track)} · ${escapeHtml(item.title)}</option>`).join('');
   document.getElementById('registration-members').innerHTML = Array.from({ length: 5 }, (_value, index) => registrationMemberTemplate(index)).join('');
 }
 
@@ -116,7 +116,7 @@ async function register(event) {
   event.preventDefault(); const form = event.currentTarget; const data = new FormData(form); const submit = form.querySelector('[type="submit"]');
   const members = [...form.querySelectorAll('[data-registration-member]')].map((element) => Object.fromEntries([...element.querySelectorAll('input,select')].map((input) => [input.name, input.value.trim ? input.value.trim() : input.value])));
   if (members.length !== 5) return message('register-message', 'Exactly five team members are required.');
-  if (!members.some((member) => member.gender === 'Female')) return message('register-message', 'Every team must include at least one female member.');
+  if (!members.some((member) => member.gender === 'Female')) return message('register-message', 'Select Female for at least one of the five members.');
   data.set('members', JSON.stringify(members)); submit.disabled = true;
   try {
     const response = await fetch(api('/api/auth/register'), { method: 'POST', body: data }); const payload = await response.json();
