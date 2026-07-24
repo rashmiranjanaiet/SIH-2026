@@ -73,13 +73,13 @@ const { Schema } = mongoose;
 const userSchema = new Schema({
   fullName: { type: String, required: true, trim: true, maxlength: 100 },
   gender: { type: String, enum: ['Male', 'Female', 'Other', 'Prefer not to say'], required: true },
-  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  email: { type: String, required: true, lowercase: true, trim: true },
   mobile: { type: String, required: true, trim: true },
   department: { type: String, required: true, trim: true },
   branch: { type: String, required: true, trim: true },
   academicYear: { type: String, required: true, trim: true },
   semester: { type: String, required: true, trim: true },
-  registrationNumber: { type: String, required: true, unique: true, trim: true },
+  registrationNumber: { type: String, required: true, trim: true },
   rollNumber: { type: String, required: true, trim: true },
   address: { type: String, default: '', trim: true, maxlength: 300 },
   linkedIn: { type: String, default: '', trim: true },
@@ -105,8 +105,8 @@ const teamMemberSchema = new Schema({
 }, { _id: false });
 
 const teamSchema = new Schema({
-  name: { type: String, required: true, unique: true, trim: true, maxlength: 100 },
-  leader: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+  name: { type: String, required: true, trim: true, maxlength: 100 },
+  leader: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   members: { type: [teamMemberSchema], required: true, validate: [(members) => members.length === 5, 'A team must have exactly 5 members.'] },
   problem: {
     psId: { type: String, required: true },
@@ -335,9 +335,7 @@ app.post('/api/auth/register', requireDatabase, upload.single('photo'), teamRegi
     const selected = PROBLEM_STATEMENTS.find((item) => item.psId === req.body.psId) || PROBLEM_STATEMENTS[0];
     const leader = completedMembers[0];
     if (!/^\S+@\S+\.\S+$/.test(String(members[0]?.email || '').trim())) return res.status(422).json({ message: 'Enter a valid email address for the team leader so they can sign in.' });
-    const existing = await User.findOne({ $or: [{ email: leader.email }, { registrationNumber: leader.registrationNumber }] });
     const teamName = text(req.body.teamName, '');
-    if (existing || await Team.exists({ name: teamName })) return res.status(409).json({ message: 'That team name, leader email, or leader registration number is already registered.' });
     const photo = req.file ? await uploadToCloudinary(req.file, 'sih-2026-aryan/profile-photos', 'image') : null;
     const password = await bcrypt.hash(req.body.leaderPassword, 12);
     user = await User.create({
@@ -356,8 +354,12 @@ app.post('/api/auth/register', requireDatabase, upload.single('photo'), teamRegi
 
 app.post('/api/auth/login', requireDatabase, [body('email').isEmail().normalizeEmail(), body('password').isString().isLength({ min: 1, max: 72 })], sendValidationErrors, async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email.toLowerCase() }).select('+password');
-    if (!user || !(await bcrypt.compare(req.body.password, user.password))) return res.status(401).json({ message: 'Incorrect email address or password.' });
+    const candidates = await User.find({ email: req.body.email.toLowerCase() }).sort({ createdAt: -1 }).select('+password');
+    let user;
+    for (const candidate of candidates) {
+      if (await bcrypt.compare(req.body.password, candidate.password)) { user = candidate; break; }
+    }
+    if (!user) return res.status(401).json({ message: 'Incorrect email address or password.' });
     user.lastLoginAt = new Date();
     await user.save();
     await logActivity({ user, ip: req.ip }, 'Signed in', user.email);
@@ -643,6 +645,19 @@ app.use((error, _req, res, _next) => {
   res.status(status).json({ message: error.message || 'Something went wrong. Please try again.' });
 });
 
+async function removeLegacyUniqueIndexes() {
+  const dropIfPresent = async (collection, indexName) => {
+    try { await collection.dropIndex(indexName); }
+    catch (error) {
+      if (![26, 27].includes(error?.code)) throw error;
+    }
+  };
+  await dropIfPresent(User.collection, 'email_1');
+  await dropIfPresent(User.collection, 'registrationNumber_1');
+  await dropIfPresent(Team.collection, 'name_1');
+  await dropIfPresent(Team.collection, 'leader_1');
+}
+
 async function start() {
   if (!databaseUri) {
     const message = 'MONGODB_URI is not configured.';
@@ -650,6 +665,7 @@ async function start() {
     console.warn(`${message} Public preview is available; database actions will return 503.`);
   } else {
     await mongoose.connect(databaseUri, { serverSelectionTimeoutMS: 10000 });
+    await removeLegacyUniqueIndexes();
     console.log('MongoDB connected.');
   }
   app.listen(PORT, () => console.log(`SIH portal listening on port ${PORT}`));
