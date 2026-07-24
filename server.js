@@ -305,10 +305,7 @@ app.get('/api/public/config', async (_req, res, next) => {
 });
 
 const teamRegistrationValidation = [
-  body('teamName').trim().isLength({ min: 3, max: 100 }),
-  body('department').trim().isLength({ min: 2, max: 100 }),
-  body('facultyMentor').trim().isLength({ min: 2, max: 100 }),
-  body('psId').trim().notEmpty(),
+  body('teamName').trim().isLength({ min: 1, max: 100 }),
   body('leaderPassword').isLength({ min: 8, max: 72 }),
   body('members').notEmpty()
 ];
@@ -316,29 +313,39 @@ const teamRegistrationValidation = [
 app.post('/api/auth/register', requireDatabase, upload.single('photo'), teamRegistrationValidation, sendValidationErrors, async (req, res, next) => {
   let user;
   try {
-    if (!req.file) return res.status(422).json({ message: 'A passport-size photograph for the team leader is required.' });
     let members;
     try { members = typeof req.body.members === 'string' ? JSON.parse(req.body.members) : req.body.members; } catch (_error) { return res.status(422).json({ message: 'The team member details could not be read.' }); }
     if (!Array.isArray(members) || members.length !== 5) return res.status(422).json({ message: 'Each SIH team must contain exactly five members.' });
-    const requiredFields = ['name', 'gender', 'email', 'mobile', 'branch', 'academicYear', 'semester', 'registrationNumber', 'rollNumber'];
-    if (members.some((member) => requiredFields.some((field) => !String(member[field] || '').trim()))) return res.status(422).json({ message: 'Complete every required field for all five team members.' });
-    if (members.some((member) => !['Male', 'Female', 'Other', 'Prefer not to say'].includes(member.gender))) return res.status(422).json({ message: 'Select a valid gender for every team member.' });
-    if (!members.some((member) => member.gender === 'Female')) return res.status(422).json({ message: 'Each team must include at least one female member.' });
-    const normalizedEmails = members.map((member) => String(member.email).trim().toLowerCase());
-    if (normalizedEmails.some((email) => !/^\S+@\S+\.\S+$/.test(email)) || new Set(normalizedEmails).size !== 5) return res.status(422).json({ message: 'Use five distinct, valid email addresses.' });
-    const selected = PROBLEM_STATEMENTS.find((item) => item.psId === req.body.psId);
-    if (!selected) return res.status(422).json({ message: 'Select a valid SIH problem statement.' });
-    const leader = { ...members[0], email: normalizedEmails[0] };
+    const reference = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`.toUpperCase();
+    const text = (value, fallback = 'Not provided') => String(value || '').trim() || fallback;
+    const allowedGenders = ['Male', 'Female', 'Other', 'Prefer not to say'];
+    const completedMembers = members.map((member, index) => {
+      const value = member && typeof member === 'object' ? member : {};
+      const suppliedEmail = String(value.email || '').trim().toLowerCase();
+      return {
+        name: text(value.name, ''),
+        gender: allowedGenders.includes(value.gender) ? value.gender : 'Prefer not to say',
+        email: suppliedEmail || `not-provided-${reference}-${index + 1}@pending.aryan.local`,
+        mobile: text(value.mobile), branch: text(value.branch), academicYear: text(value.academicYear), semester: text(value.semester),
+        registrationNumber: text(value.registrationNumber, `PENDING-${reference}-${index + 1}`), rollNumber: text(value.rollNumber)
+      };
+    });
+    if (completedMembers.some((member) => !member.name)) return res.status(422).json({ message: 'Enter the full name for all five team members.' });
+    if (!completedMembers.some((member) => member.gender === 'Female')) return res.status(422).json({ message: 'Select Female for at least one of the five members.' });
+    const selected = PROBLEM_STATEMENTS.find((item) => item.psId === req.body.psId) || PROBLEM_STATEMENTS[0];
+    const leader = completedMembers[0];
+    if (!/^\S+@\S+\.\S+$/.test(String(members[0]?.email || '').trim())) return res.status(422).json({ message: 'Enter a valid email address for the team leader so they can sign in.' });
     const existing = await User.findOne({ $or: [{ email: leader.email }, { registrationNumber: leader.registrationNumber }] });
-    if (existing || await Team.exists({ name: req.body.teamName })) return res.status(409).json({ message: 'That team name, leader email, or leader registration number is already registered.' });
-    const photo = await uploadToCloudinary(req.file, 'sih-2026-aryan/profile-photos', 'image');
+    const teamName = text(req.body.teamName, '');
+    if (existing || await Team.exists({ name: teamName })) return res.status(409).json({ message: 'That team name, leader email, or leader registration number is already registered.' });
+    const photo = req.file ? await uploadToCloudinary(req.file, 'sih-2026-aryan/profile-photos', 'image') : null;
     const password = await bcrypt.hash(req.body.leaderPassword, 12);
     user = await User.create({
-      fullName: leader.name, gender: leader.gender, email: leader.email, mobile: leader.mobile, department: req.body.department,
+      fullName: leader.name, gender: leader.gender, email: leader.email, mobile: leader.mobile, department: text(req.body.department),
       branch: leader.branch, academicYear: leader.academicYear, semester: leader.semester, registrationNumber: leader.registrationNumber,
-      rollNumber: leader.rollNumber, password, photoUrl: photo.secure_url
+      rollNumber: leader.rollNumber, password, photoUrl: photo?.secure_url || ''
     });
-    const team = await Team.create({ name: req.body.teamName, leader: user._id, members: members.map((member, index) => ({ ...member, email: normalizedEmails[index] })), problem: selected, facultyMentor: req.body.facultyMentor });
+    const team = await Team.create({ name: teamName, leader: user._id, members: completedMembers, problem: selected, facultyMentor: text(req.body.facultyMentor) });
     await logActivity({ user, ip: req.ip }, 'Team registered', team.name);
     return res.status(201).json({ message: 'Five-member team registration received. The team leader can now sign in.', token: signToken(user), user: publicUser(user), team });
   } catch (error) {
