@@ -107,7 +107,7 @@ const teamMemberSchema = new Schema({
 const teamSchema = new Schema({
   name: { type: String, required: true, trim: true, maxlength: 100 },
   leader: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  members: { type: [teamMemberSchema], required: true, validate: [(members) => members.length === 5, 'A team must have exactly 5 members.'] },
+  members: { type: [teamMemberSchema], required: true, validate: [(members) => members.length === 6, 'A team must have exactly 6 members.'] },
   problem: {
     psId: { type: String, required: true },
     title: { type: String, required: true },
@@ -315,7 +315,7 @@ app.post('/api/auth/register', requireDatabase, upload.single('photo'), teamRegi
   try {
     let members;
     try { members = typeof req.body.members === 'string' ? JSON.parse(req.body.members) : req.body.members; } catch (_error) { return res.status(422).json({ message: 'The team member details could not be read.' }); }
-    if (!Array.isArray(members) || members.length !== 5) return res.status(422).json({ message: 'Each SIH team must contain exactly five members.' });
+    if (!Array.isArray(members) || members.length !== 6) return res.status(422).json({ message: 'Each SIH team must contain exactly six members.' });
     const reference = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`.toUpperCase();
     const text = (value, fallback = 'Not provided') => String(value || '').trim() || fallback;
     const allowedGenders = ['Male', 'Female', 'Other', 'Prefer not to say'];
@@ -330,8 +330,10 @@ app.post('/api/auth/register', requireDatabase, upload.single('photo'), teamRegi
         registrationNumber: text(value.registrationNumber, `PENDING-${reference}-${index + 1}`), rollNumber: text(value.rollNumber)
       };
     });
-    if (completedMembers.some((member) => !member.name)) return res.status(422).json({ message: 'Enter the full name for all five team members.' });
-    if (!completedMembers.some((member) => member.gender === 'Female')) return res.status(422).json({ message: 'Select Female for at least one of the five members.' });
+    if (completedMembers.some((member) => !member.name)) return res.status(422).json({ message: 'Enter the full name for all six team members.' });
+    const femaleCount = completedMembers.filter((member) => member.gender === 'Female').length;
+    const maleCount = completedMembers.filter((member) => member.gender === 'Male').length;
+    if (femaleCount !== 1 || maleCount !== 5) return res.status(422).json({ message: 'Select exactly one Female member and five Male members.' });
     const selected = PROBLEM_STATEMENTS.find((item) => item.psId === req.body.psId) || PROBLEM_STATEMENTS[0];
     const leader = completedMembers[0];
     if (!/^\S+@\S+\.\S+$/.test(String(members[0]?.email || '').trim())) return res.status(422).json({ message: 'Enter a valid email address for the team leader so they can sign in.' });
@@ -345,7 +347,7 @@ app.post('/api/auth/register', requireDatabase, upload.single('photo'), teamRegi
     });
     const team = await Team.create({ name: teamName, leader: user._id, members: completedMembers, problem: selected, facultyMentor: text(req.body.facultyMentor) });
     await logActivity({ user, ip: req.ip }, 'Team registered', team.name);
-    return res.status(201).json({ message: 'Five-member team registration received. The team leader can now sign in.', token: signToken(user), user: publicUser(user), team });
+    return res.status(201).json({ message: 'Six-member team registration received. The team leader can now sign in.', token: signToken(user), user: publicUser(user), team });
   } catch (error) {
     if (user && error?.code === 11000) await User.findByIdAndDelete(user._id).catch(() => undefined);
     return next(error);
@@ -400,10 +402,12 @@ app.post('/api/student/team', requireDatabase, authenticate, allow('student'), [
     if (await Team.exists({ leader: req.user._id })) return res.status(409).json({ message: 'You already lead a registered team. Contact the SIH cell to make changes.' });
     let members;
     try { members = typeof req.body.members === 'string' ? JSON.parse(req.body.members) : req.body.members; } catch (_error) { return res.status(422).json({ message: 'Team members could not be read.' }); }
-    if (!Array.isArray(members) || members.length !== 5) return res.status(422).json({ message: 'A team must contain exactly five members.' });
+    if (!Array.isArray(members) || members.length !== 6) return res.status(422).json({ message: 'A team must contain exactly six members.' });
     const fields = ['name', 'gender', 'email', 'mobile', 'branch', 'academicYear'];
     if (members.some((member) => fields.some((field) => !String(member[field] || '').trim()))) return res.status(422).json({ message: 'Complete every required member field.' });
-    if (!members.some((member) => member.gender === 'Female')) return res.status(422).json({ message: 'A team must include at least one female member.' });
+    const femaleCount = members.filter((member) => member.gender === 'Female').length;
+    const maleCount = members.filter((member) => member.gender === 'Male').length;
+    if (femaleCount !== 1 || maleCount !== 5) return res.status(422).json({ message: 'A team must include exactly one female member and five male members.' });
     const selected = PROBLEM_STATEMENTS.find((item) => item.psId === req.body.psId);
     if (!selected) return res.status(422).json({ message: 'Select a valid SIH problem statement.' });
     const team = await Team.create({ name: req.body.name, leader: req.user._id, members, problem: selected, facultyMentor: req.body.facultyMentor });

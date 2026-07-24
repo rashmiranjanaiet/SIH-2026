@@ -5,7 +5,7 @@ A full-stack, role-aware SIH internal-selection portal for **Aryan Institute of 
 ## Included
 
 - Public SIH landing page: official supplied visual assets, responsive Bootstrap layout, countdown, problem-statement filters, timeline, resources, notices, AOS motion, and a safe 30-click SIH-logo celebration.
-- Team registration: exactly five students, at least one female member, one team leader login, and only the leader's passport-size photo uploaded to Cloudinary.
+- Team registration: exactly six students—one female member and five male members—with one team leader login and only the leader's passport-size photo uploaded to Cloudinary.
 - Private student dashboard: only the signed-in student’s profile, team, notices, resources, timeline, and status are exposed.
 - Leader account: only the first registered member can sign in with their email and password; password-reset requests are sent to the SIH Cell WhatsApp number for identity verification.
 - Admin portal: student search and approvals, team/mentor management, resource uploads, notices, activity logs, schedules, analytics and CSV/Excel/PDF reporting.

@@ -50,7 +50,7 @@ function registrationMemberTemplate(index) {
   const label = leader ? 'Team leader' : `Member ${index + 1}`;
   return `<section class="member-form" data-registration-member><h4>${label}${leader ? ' · login account holder' : ''}</h4><div class="row g-2">
     <div class="col-md-4"><label class="form-label">Full name *</label><input class="form-control form-control-sm" name="name" required></div>
-    <div class="col-md-2"><label class="form-label">Gender${leader ? ' *' : ' (optional)'}</label><select class="form-select form-select-sm" name="gender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option></select></div>
+    <div class="col-md-2"><label class="form-label">Gender *</label><select class="form-select form-select-sm" name="gender" required><option value="">Select</option><option>Male</option><option>Female</option></select></div>
     <div class="col-md-3"><label class="form-label">Email${leader ? ' *' : ' (optional)'}</label><input class="form-control form-control-sm" name="email" type="email" ${leader ? 'required' : ''}></div>
     <div class="col-md-3"><label class="form-label">Mobile (optional)</label><input class="form-control form-control-sm" name="mobile" inputmode="tel"></div>
     <div class="col-md-3"><label class="form-label">Branch (optional)</label><input class="form-control form-control-sm" name="branch" placeholder="e.g. CSE"></div>
@@ -64,7 +64,7 @@ function registrationMemberTemplate(index) {
 function renderRegistrationForm() {
   const select = document.getElementById('registration-ps');
   select.innerHTML = portalConfig.problemStatements.map((item) => `<option value="${escapeHtml(item.psId)}">${escapeHtml(item.psId)} · ${escapeHtml(item.track)} · ${escapeHtml(item.title)}</option>`).join('');
-  document.getElementById('registration-members').innerHTML = Array.from({ length: 5 }, (_value, index) => registrationMemberTemplate(index)).join('');
+  document.getElementById('registration-members').innerHTML = Array.from({ length: 6 }, (_value, index) => registrationMemberTemplate(index)).join('');
 }
 
 function renderResources() {
@@ -115,8 +115,10 @@ async function login(event) {
 async function register(event) {
   event.preventDefault(); const form = event.currentTarget; const data = new FormData(form); const submit = form.querySelector('[type="submit"]');
   const members = [...form.querySelectorAll('[data-registration-member]')].map((element) => Object.fromEntries([...element.querySelectorAll('input,select')].map((input) => [input.name, input.value.trim ? input.value.trim() : input.value])));
-  if (members.length !== 5) return message('register-message', 'Exactly five team members are required.');
-  if (!members.some((member) => member.gender === 'Female')) return message('register-message', 'Select Female for at least one of the five members.');
+  if (members.length !== 6) return message('register-message', 'Exactly six team members are required.');
+  const femaleCount = members.filter((member) => member.gender === 'Female').length;
+  const maleCount = members.filter((member) => member.gender === 'Male').length;
+  if (femaleCount !== 1 || maleCount !== 5) return message('register-message', 'Select exactly one Female member and five Male members.');
   data.set('members', JSON.stringify(members)); submit.disabled = true;
   try {
     const response = await fetch(api('/api/auth/register'), { method: 'POST', body: data }); const payload = await response.json();
